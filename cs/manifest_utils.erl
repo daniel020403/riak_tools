@@ -3,7 +3,8 @@
 -export([display_manifest_bucket/1,
          display_manifest_pbc/0,
          display_object_manifests/1,
-         display_active_manifest/1]).
+         display_active_manifest/1,
+         display_stale_manifests/1]).
 
 checkout_client() ->
     {ok, CPid} = riak_cs_riak_client:checkout(),
@@ -49,3 +50,10 @@ display_object_manifests({Bucket, Key}) ->
 display_active_manifest({Bucket, Key}) ->
     Manifests = get_object_manifest({Bucket, Key}),
     io:format("~nActive Manifest:~n~p~n", [riak_cs_manifest_utils:active_manifest(Manifests)]).
+
+get_stale_manifests(Manifests) ->
+    riak_cs_manifest_utils:overwritten_UUIDs(Manifests).
+
+display_stale_manifests({Bucket, Key}) ->
+    Manifests = get_object_manifest({Bucket, Key}),
+    io:format("~nStale Manifests:~n~p~n", [get_stale_manifests(Manifests)]).
